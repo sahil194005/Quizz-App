@@ -1,12 +1,29 @@
-const Express = require("express");
 require("dotenv").config();
 
+
+const Express = require("express");
+const app = Express(); 
+const http = require("http").Server(app);
+const io = require("socket.io")(http, { cors: { origin: "*" } });
+
+io.on("connection", (socket) => {
+	
+	socket.on('createRoom', (roomData) => {
+		// Handle room creation logic here
+	
+		// Emit an event to inform all connected clients about the new room
+		io.emit('newRoomCreated', roomData);
+	  });
+
+	
+});
+
+const socketIO = require('socket.io');
 const UserRoute = require('./Routes/Users')
 const RoomRoute = require('./Routes/Room');
 
 const connectDB = require("./DB/connect");
 const cors = require('cors');
-const app = Express(); 
  
 app.use(cors());
 
@@ -22,7 +39,7 @@ const PORT = process.env.PORT||3011
 async function serverStart() {
 	try {
 		await connectDB();
-		app.listen(PORT, () => {
+		http.listen(PORT, () => {
 			console.log(`server listening on port ${PORT}`);
 		});
 	} catch (error) {

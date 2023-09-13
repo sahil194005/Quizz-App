@@ -11,6 +11,7 @@ async function isEmailValid(email) {
 const SignUp = async (req, res) => {
 	try {
 		const { email, password } = req.body;
+		
 		const { valid, reason, validators } = await isEmailValid(email);
 		if (valid) {
 			let existingUser = await UserSchema.findOne({

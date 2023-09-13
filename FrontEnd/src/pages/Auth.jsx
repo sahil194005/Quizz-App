@@ -52,8 +52,8 @@ const Login = () => {
             password: passwordRef.current.value
             
         }
-        passwordRef.current.value = emailRef.current.value = "";
-        if (!login) nameRef.current.value = "";
+        // passwordRef.current.value = emailRef.current.value = "";
+        // if (!login) nameRef.current.value = "";
         login ? AuthHandler(LoginObj) : AuthHandler(SignUpObj)
     }
 

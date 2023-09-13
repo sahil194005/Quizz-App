@@ -19,7 +19,7 @@ const RoomSchema = new mongoose.Schema(
 		status: {
 			type: String,
             default: "waiting",
-            enum: ["waiting", "in-progress", "finished"]
+            enum: ["waiting", "in-progress", "finished","full"]
 		},
 		players: [
 			{
