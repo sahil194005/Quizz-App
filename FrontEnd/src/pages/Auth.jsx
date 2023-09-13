@@ -4,6 +4,7 @@ import { NavLink,useNavigate } from 'react-router-dom'
 
 
 const Login = () => {
+    
     const [login, setLogin] = useState(false)
     const [sendingReq, setSendingReq] = useState(false);
     const navigate = useNavigate();
@@ -16,22 +17,22 @@ const Login = () => {
             if (login) {
                
                 setSendingReq(true);
-                const response = await axios.post(`https://ecommerce-backend-xe7w.onrender.com/users/login`, obj);
+                const response = await axios.post(`http://localhost:3011/users/login`, obj);
                 setSendingReq(false);
                 localStorage.setItem('token', JSON.stringify(response.data.token));
-                // window.location.href = '/Store'
+                
                 navigate('/lobby');
             }
             else {
               
                 setSendingReq(true);
-                const response = await axios.post(`https://ecommerce-backend-xe7w.onrender.com/users/signup`, obj);
+                const response = await axios.post(`http://localhost:3011/users/signup`, obj);
                 setSendingReq(false);
                 setLogin(true);
             }
         } catch (error) {
             console.log(error);
-            setAlertSeverity('error');
+           
             setSendingReq(false);
            
         }
@@ -73,7 +74,7 @@ const Login = () => {
                         </div>
                         <div className="flex flex-col py-3">
                             <label >Password</label>
-                            <input ref={passwordRef} className=" text-center border-b-4 p-2 border-gray-400" type="string" required ></input>
+                            <input ref={passwordRef} className=" text-center border-b-4 p-2 border-gray-400" type="password" required ></input>
                         </div>
 
 

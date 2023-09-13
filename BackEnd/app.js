@@ -2,6 +2,7 @@ const Express = require("express");
 require("dotenv").config();
 
 const UserRoute = require('./Routes/Users')
+const RoomRoute = require('./Routes/Room');
 
 const connectDB = require("./DB/connect");
 const cors = require('cors');
@@ -13,6 +14,7 @@ app.use(cors());
 
 app.use(Express.json());
 app.use('/users', UserRoute)
+app.use('/room', RoomRoute)
 
 
 
