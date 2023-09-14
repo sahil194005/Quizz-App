@@ -31,7 +31,7 @@ const Lobby = () => {
       setRooms((prevRooms) => {
         return [...prevRooms, newRoomData];
       })
-      setShowButton('false');
+     
 
     });
     socket.on('quizStarted', ({roomId,player1,player2,questions}) => {
@@ -40,6 +40,13 @@ const Lobby = () => {
         localStorage.setItem('RoomId', roomId);
         setQuestions(questions);
       }
+      setRooms((prevRooms) => {
+        return prevRooms.forEach((room) => {
+          if (room._id === roomId) {
+            room.status = "in-progress"
+          }
+        })
+      })
     });
     socket.on('joinedRoom', (newRoomData) => {
       setRooms((prevRooms) => {
@@ -51,7 +58,7 @@ const Lobby = () => {
           }
         });
       });
-      setShowButton('false');
+      
     });
     return () => {
       socket.disconnect();
@@ -82,9 +89,11 @@ const Lobby = () => {
   return (
     <div className=''>
       <div className='flex justify-around p-4  '>
+
+        <LeaderBoard/>
         {showForm && <Form setShowForm={setShowForm}  />}
         {!showForm  && 
-          <button className='p-3 font-medium tracking-widest text-white uppercase bg-black shadow-lg focus:outline:none hover:bg-gray-900 hover:shadow:-none rounded-md  ' onClick={() => { setShowForm((state) => !state) }}>Create Room</button>
+          <button className='p-3 h-[50px] font-medium tracking-widest text-white uppercase bg-black shadow-lg focus:outline:none hover:bg-gray-900 hover:shadow:-none rounded-md  ' onClick={() => { setShowForm((state) => !state) }}>Create Room</button>
         }
       </div>
 
@@ -93,7 +102,6 @@ const Lobby = () => {
           return <Room  key={room._id} name={room.name} playerCount={room.playerCount} host={room.host} players={room.players} status={room.status} _id={room._id} user={user} />
         })}
       </div>
-      <LeaderBoard/>
     </div>
   )
 }

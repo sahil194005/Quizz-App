@@ -34,7 +34,7 @@ const createRoom = async (req, res) => {
 
 const getRooms = async (req, res) => {
 	try {
-		const response = await RoomSchema.find().populate({
+		const response = await RoomSchema.find({status:{$ne:"finished"}}).populate({
 			path: "players",
 			model: "users",
 		});
@@ -52,34 +52,59 @@ const getRooms = async (req, res) => {
 
 const joinRoom = async (req, res) => {
 	try {
-	  const response = await RoomSchema.findOneAndUpdate(
-		{ _id: req.body.roomId },
-		{
-		  $push: {
-			players: req.User._id,
-		  },
-		  $addToSet: {
-			marks: { player: req.User._id, marks: 0 },
-		  },
-		  status: "full",
-		},
-		{ new: true } // return updated room object;
-	  );
-  
-	  const resi = await response.populate({
-		path: "players",
-		model: "users",
-	  });
-		
-  
-	  res.status(200).json({
-		msg: "Joined room successfully",
-		data: resi,
-	  });
-	} catch (error) {
-	  console.log(error);
-	  res.status(500).json({ error: "Failed to join room." });
-	}
-  };
+		const response = await RoomSchema.findOneAndUpdate(
+			{ _id: req.body.roomId },
+			{
+				$push: {
+					players: req.User._id,
+				},
+				$addToSet: {
+					marks: { player: req.User._id, marks: 0 },
+				},
+				status: "full",
+			},
+			{ new: true } // return updated room object;
+		);
 
-module.exports = { createRoom, getRooms, joinRoom };
+		const resi = await response.populate({
+			path: "players",
+			model: "users",
+		});
+
+		res.status(200).json({
+			msg: "Joined room successfully",
+			data: resi,
+		});
+	} catch (error) {
+		console.log(error);
+		res.status(500).json({ error: "Failed to join room." });
+	}
+};
+
+const showList = async (req, res) => {
+	try {
+		const userId = req.User._id;
+		const rooms = await RoomSchema.find({
+			status: "finished",
+			$or: [{ player1: userId }, { player2: userId }],
+		}).populate({
+			path: "players",
+			model: "users",
+		});
+
+		res.status(200).json({
+			msg: "Rooms with status 'finished' and matching player found",
+			data: rooms,
+		});
+	} catch (error) {
+		console.log(error);
+		res.status(500).json({ error: "Failed to join room." });
+	}
+};
+
+module.exports = {
+	createRoom,
+	getRooms,
+	joinRoom,
+	showList,
+};
