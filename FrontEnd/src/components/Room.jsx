@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from 'react'
 import { GlobalContext } from '../containers/globalContext';
 import axios from 'axios'
 import io from 'socket.io-client'
-const Room = ({ setShowButton, name, host, players, status, _id, user }) => {
+const Room = ({  name, host, players, status, _id, user }) => {
     const socket = io('http://localhost:3011');
     
     let bgColorClass = '';
@@ -24,7 +24,7 @@ const Room = ({ setShowButton, name, host, players, status, _id, user }) => {
             bgColorClass = 'bg-gray-500';
     }
     const joinRoomHandler = async (e) => {
-        
+
         try {
             e.preventDefault();
             
@@ -33,7 +33,7 @@ const Room = ({ setShowButton, name, host, players, status, _id, user }) => {
             }
             const token = JSON.parse(localStorage.getItem('token'));
             const response = await axios.post('http://localhost:3011/room/join-room', roomObj, { headers: { "Authorization": token } });
-            setShowButton(false);
+           
             socket.emit('joinRoom', response.data.data);
         } catch (error) {
             console.log(error);
@@ -47,7 +47,6 @@ const Room = ({ setShowButton, name, host, players, status, _id, user }) => {
             try {
                 const token = JSON.parse(localStorage.getItem('token'));
                 const response = await axios.post('http://localhost:3011/quizz/start-quizz', { roomId: _id }, { headers: { "Authorization": token } });
-                
                 const questions = response.data.data;
                 let socketObj = {
                     roomId: _id,

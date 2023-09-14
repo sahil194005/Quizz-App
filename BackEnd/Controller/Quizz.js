@@ -1,5 +1,5 @@
 const QuestionSchema = require("../Models/Questions");
-
+const RoomSchema = require("../Models/Rooms");
 const get5Questions = async (req, res) => {
 	try {
 		const questions = await QuestionSchema.aggregate([
@@ -46,4 +46,39 @@ const getCorrectAnswer = async (req, res) => {
 	}
 };
 
-module.exports = { get5Questions, getCorrectAnswer };
+const finishQuizz = async (req, res) => {
+	try {
+		const { RoomId, marks } = req.body;
+		const userId = req.User._id;
+		const room = await RoomSchema.findById(RoomId);
+		const playerMark = room.marks.find((mark) =>
+			mark.player.equals(userId)
+		);
+
+		if (playerMark) {
+			playerMark.marks = marks;
+			room.status = "finished"
+			await room.save();
+
+			res.status(200).json({
+				msg: "Quiz submitted successfully",
+			});
+		} else {
+			res.status(404).json({
+				msg: "Player not found in the room",
+			});
+		}
+	} catch (error) {
+		console.log(error);
+		res.status(403).json({
+			msg: "unable to submit quiz",
+			error: error,
+		});
+	}
+};
+
+module.exports = {
+	get5Questions,
+	getCorrectAnswer,
+	finishQuizz,
+};

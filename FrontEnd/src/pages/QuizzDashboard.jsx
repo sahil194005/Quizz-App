@@ -16,6 +16,7 @@ const QuizzDashboard = () => {
 
 
   const handleSave = async () => {
+   
     try {
       const token = JSON.parse(localStorage.getItem('token'));
       let response = await axios.get(`http://localhost:3011/quizz/get-correct-answer/${currentQuestion._id}`, { headers: { "Authorization": token } });
@@ -30,13 +31,24 @@ const QuizzDashboard = () => {
         setTimer(10);
       }
       else {
-        const token = JSON.parse(localStorage.getItem('token'));
-        const finishObj = {
+        if (selectedAnswer && selectedAnswer === correct_answer) {
+          setCurrenMarks((prev) => prev + 10);
         }
-        const resi = await  axios.post('localhost:3011/quizz/finish', finishObj, { headers: { "Authorization": token } })
-
+        const token = JSON.parse(localStorage.getItem('token'));
+        
+        const roomId = localStorage.getItem('RoomId');
+      
+        const finishObj = {
+          marks: currentMarks,
+          RoomId:roomId
+        }
+      
+        const resi = await  axios.post('http://localhost:3011/quizz/finish', finishObj, { headers: { "Authorization": token } })
+        console.log(resi);
+        navigate('/lobby');
       }
     } catch (error) {
+      console.log(error);
     }
   };
 

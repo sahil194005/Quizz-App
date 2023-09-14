@@ -52,23 +52,34 @@ const getRooms = async (req, res) => {
 
 const joinRoom = async (req, res) => {
 	try {
-		const response = await RoomSchema.findOneAndUpdate(
-			{ _id: req.body.roomId },
-			{ $push: { players: req.User._id }, status: "full" },
-			{ new: true } //return updated room object;
-		);
-		const resi = await response.populate({
-			path: "players",
-			model: "users",
-		});
-		res.status(200).json({
-			msg: "Joined room successfully",
-			data: resi,
-		});
+	  const response = await RoomSchema.findOneAndUpdate(
+		{ _id: req.body.roomId },
+		{
+		  $push: {
+			players: req.User._id,
+		  },
+		  $addToSet: {
+			marks: { player: req.User._id, marks: 0 },
+		  },
+		  status: "full",
+		},
+		{ new: true } // return updated room object;
+	  );
+  
+	  const resi = await response.populate({
+		path: "players",
+		model: "users",
+	  });
+		
+  
+	  res.status(200).json({
+		msg: "Joined room successfully",
+		data: resi,
+	  });
 	} catch (error) {
-		console.log(error);
-		res.status(500).json({ error: "Failed to join room." });
+	  console.log(error);
+	  res.status(500).json({ error: "Failed to join room." });
 	}
-};
+  };
 
 module.exports = { createRoom, getRooms, joinRoom };

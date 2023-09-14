@@ -4,12 +4,13 @@ import Form from '../components/Form'
 import { GlobalContext } from '../containers/globalContext'
 import Room from '../components/Room'
 import io from 'socket.io-client';
-import {useNavigate} from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import LeaderBoard from '../components/LeaderBoard'
 const Lobby = () => {
   const user = parseJwt(localStorage.getItem('token'))
   const socket = io('http://localhost:3011');
   const [showForm, setShowForm] = useState(false);
-  const [showbutton, setShowButton] = useState(false);
+
   const { rooms, setRooms,questions,setQuestions } = useContext(GlobalContext);
   const navigate = useNavigate();
 
@@ -20,13 +21,6 @@ const Lobby = () => {
         const response = await axios.get('http://localhost:3011/room/get-rooms', { headers: { "Authorization": token } })
         setRooms(response.data.data);
         console.log('get rooms being called');
-        if(response.data.data.length<1) setShowButton(true)
-        response.data.data.forEach((room) => {
-          if (room.players.length < 2 && room.host._id !== user._id) {
-            setShowButton(true);
-          }
-        })
-
       } catch (error) {
         console.log(error);
       }
@@ -43,6 +37,7 @@ const Lobby = () => {
     socket.on('quizStarted', ({roomId,player1,player2,questions}) => {
       if (user.userId== player1 || user.userId== player2) {
         navigate('quizz-dashboard');
+        localStorage.setItem('RoomId', roomId);
         setQuestions(questions);
       }
     });
@@ -87,17 +82,18 @@ const Lobby = () => {
   return (
     <div className=''>
       <div className='flex justify-around p-4  '>
-        {showForm && <Form setShowForm={setShowForm} setShowButton={setShowButton} />}
-        {(!showForm &&showbutton ) && ( // Check for vacant space as well
+        {showForm && <Form setShowForm={setShowForm}  />}
+        {!showForm  && 
           <button className='p-3 font-medium tracking-widest text-white uppercase bg-black shadow-lg focus:outline:none hover:bg-gray-900 hover:shadow:-none rounded-md  ' onClick={() => { setShowForm((state) => !state) }}>Create Room</button>
-        )}
+        }
       </div>
 
       <div className='flex justify-center gap-9 flex-wrap p-4'>
         {rooms.length > 0 && rooms.map((room) => {
-          return <Room showbutton={showbutton} setShowButton={setShowButton} key={room._id} name={room.name} playerCount={room.playerCount} host={room.host} players={room.players} status={room.status} _id={room._id} user={user} />
+          return <Room  key={room._id} name={room.name} playerCount={room.playerCount} host={room.host} players={room.players} status={room.status} _id={room._id} user={user} />
         })}
       </div>
+      <LeaderBoard/>
     </div>
   )
 }

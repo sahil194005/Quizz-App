@@ -3,7 +3,7 @@ import axios from 'axios'
 import { AiOutlineClose } from 'react-icons/ai'
 import { GlobalContext } from '../containers/globalContext'
 import io from 'socket.io-client';
-const Form = ({ setShowForm,setShowButton }) => {
+const Form = ({ setShowForm }) => {
 
   const roomName = useRef(null);
   const { setRooms } = useContext(GlobalContext);
@@ -17,7 +17,7 @@ const Form = ({ setShowForm,setShowButton }) => {
       const token = JSON.parse(localStorage.getItem('token'));
       const response = await axios.post('http://localhost:3011/room/create-room',roomObj,{headers:{"Authorization":token}})
       roomName.current.value = "";
-      setShowButton(false);
+     
       socket.emit('createRoom', response.data.data);
     } catch (error) {
       console.log(error);
