@@ -34,7 +34,9 @@ const createRoom = async (req, res) => {
 
 const getRooms = async (req, res) => {
 	try {
-		const response = await RoomSchema.find({status:{$ne:"finished"}}).populate({
+		const response = await RoomSchema.find({
+			status: { $ne: "finished" },
+		}).populate({
 			path: "players",
 			model: "users",
 		});
@@ -82,14 +84,22 @@ const joinRoom = async (req, res) => {
 };
 
 const showList = async (req, res) => {
+	
 	try {
 		const userId = req.User._id;
 		const rooms = await RoomSchema.find({
 			status: "finished",
-			$or: [{ player1: userId }, { player2: userId }],
 		}).populate({
 			path: "players",
 			model: "users",
+		});
+		const newRooms = rooms.filter((room) => {
+			if (
+				room.players[0]._id !== req.User._id &&
+				room.players[1]._id !== req.User._id
+			) {
+				return room;
+			}
 		});
 
 		res.status(200).json({
