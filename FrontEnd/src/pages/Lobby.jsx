@@ -10,7 +10,7 @@ const Lobby = () => {
   const socket = io('http://localhost:3011');
   const [showForm, setShowForm] = useState(false);
   const [showbutton, setShowButton] = useState(false);
-  const { rooms, setRooms } = useContext(GlobalContext);
+  const { rooms, setRooms,questions,setQuestions } = useContext(GlobalContext);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -33,16 +33,17 @@ const Lobby = () => {
     }
     getRooms()
     socket.on('newRoomCreated', (newRoomData) => {
-      console.log(newRoomData);
+      
       setRooms((prevRooms) => {
         return [...prevRooms, newRoomData];
       })
       setShowButton('false');
 
     });
-    socket.on('quizStarted', ({roomId,player1,player2}) => {
+    socket.on('quizStarted', ({roomId,player1,player2,questions}) => {
       if (user.userId== player1 || user.userId== player2) {
         navigate('quizz-dashboard');
+        setQuestions(questions);
       }
     });
     socket.on('joinedRoom', (newRoomData) => {

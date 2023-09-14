@@ -15,12 +15,15 @@ io.on("connection", (socket) => {
 		io.emit("joinedRoom", roomData);
 	});
 	socket.on('quizStart', (socketObj) => {
+		
 		io.emit("quizStarted", socketObj);
 	});
 });
 
 const UserRoute = require("./Routes/Users");
 const RoomRoute = require("./Routes/Room");
+const QuestionsRoute = require("./Routes/questions");
+const QuizzRoute = require('./Routes/quizz');
 
 const connectDB = require("./DB/connect");
 const cors = require("cors");
@@ -30,6 +33,8 @@ app.use(cors());
 app.use(Express.json());
 app.use("/users", UserRoute);
 app.use("/room", RoomRoute);
+app.use("/questions", QuestionsRoute);
+app.use("/quizz", QuizzRoute);
 
 const PORT = process.env.PORT || 3011;
 async function serverStart() {

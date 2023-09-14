@@ -24,8 +24,10 @@ const Room = ({ setShowButton, name, host, players, status, _id, user }) => {
             bgColorClass = 'bg-gray-500';
     }
     const joinRoomHandler = async (e) => {
-        e.preventDefault();
+        
         try {
+            e.preventDefault();
+            
             const roomObj = {
                 roomId: _id
             }
@@ -44,11 +46,14 @@ const Room = ({ setShowButton, name, host, players, status, _id, user }) => {
         if (user.userId === host && players.length === 2) {
             try {
                 const token = JSON.parse(localStorage.getItem('token'));
-                // const response = await axios.post('http://localhost:3011/room/start-quiz', { roomId: _id }, { headers: { "Authorization": token } });
+                const response = await axios.post('http://localhost:3011/quizz/start-quizz', { roomId: _id }, { headers: { "Authorization": token } });
+                
+                const questions = response.data.data;
                 let socketObj = {
                     roomId: _id,
                     player1: players[0]._id,
-                    player2: players[1]._id
+                    player2: players[1]._id,
+                    questions:questions,
                 }
                 socket.emit('quizStart', socketObj);
             } catch (error) {

@@ -1,43 +1,43 @@
 const mongoose = require("mongoose");
 mongoose.set("strictQuery", true);
-mongoose.set('strictPopulate', false);
+mongoose.set("strictPopulate", false);
+
+const MarkSchema = new mongoose.Schema({
+	player: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "UserSchema", // Reference to the UserSchema
+	},
+	marks: {
+		type: Number,
+		default: 0, // You can set an initial value for marks if needed
+	},
+});
 const RoomSchema = new mongoose.Schema(
 	{
 		name: {
 			type: String,
-            required: true,
-            trim: true, 
-			minlength: 3, 
-			maxlength: 50, 
-		},
-		playerCount: { 
-			type: Number,
-            required: true,
-            default: 1,
-            max: 2, 
+			required: true,
+			trim: true,
+			minlength: 3,
+			maxlength: 50,
 		},
 		status: {
 			type: String,
-            default: "waiting",
-            enum: ["waiting", "in-progress", "finished","full"]
+			default: "waiting",
+			enum: ["waiting", "in-progress", "finished", "full"],
 		},
 		players: [
 			{
 				type: mongoose.Schema.Types.ObjectId,
 				ref: "UserSchema",
-				
 			},
 		],
 		host: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "UserSchema",
 		},
-		questions: [
-			{
-				type: mongoose.Schema.Types.ObjectId,
-				ref: "Question", // Reference to the Question Model
-			},
-		],
+		
+		marks: [MarkSchema],
 	},
 	{
 		timestamps: true,
