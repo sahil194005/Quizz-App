@@ -1,7 +1,10 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { GlobalContext } from '../containers/globalContext';
 import axios from 'axios'
-const Room = ({ name, playerCount, host, players, status, _id,user }) => {
+import io from 'socket.io-client'
+const Room = ({ setShowButton, name, host, players, status, _id, user }) => {
+    const socket = io('http://localhost:3011');
+    
     let bgColorClass = '';
     const { rooms, setRooms } = useContext(GlobalContext)
     switch (status) {
@@ -20,35 +23,48 @@ const Room = ({ name, playerCount, host, players, status, _id,user }) => {
         default:
             bgColorClass = 'bg-gray-500';
     }
-    const RoomHandler = async (e) => {
+    const joinRoomHandler = async (e) => {
         e.preventDefault();
         try {
-
             const roomObj = {
                 roomId: _id
             }
             const token = JSON.parse(localStorage.getItem('token'));
             const response = await axios.post('http://localhost:3011/room/join-room', roomObj, { headers: { "Authorization": token } });
-            setRooms((prevRooms) => {
-                const updatedRoom = response.data.data;
-                return prevRooms.map((room) => {
-                    if (room._id === updatedRoom._id) {
-                        return updatedRoom;
-                    } else {
-                        return room;
-                    }
-                });
-            });
+            setShowButton(false);
+            socket.emit('joinRoom', response.data.data);
         } catch (error) {
             console.log(error);
         }
 
     }
 
-   
-    
+    const startQuizzHandler = async (e) => {
+        e.preventDefault();
+        if (user.userId === host && players.length === 2) {
+            try {
+                const token = JSON.parse(localStorage.getItem('token'));
+                // const response = await axios.post('http://localhost:3011/room/start-quiz', { roomId: _id }, { headers: { "Authorization": token } });
+                let socketObj = {
+                    roomId: _id,
+                    player1: players[0]._id,
+                    player2: players[1]._id
+                }
+                socket.emit('quizStart', socketObj);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+    }
+
+    useEffect(() => {
+        return () => {
+            socket.disconnect();
+        };
+    }, []);
+
     return (
-        <div className=' flex flex-col gap-3 rounded-md shadow-lg min-h-[200px] min-w-[400px] bg-gray-800 text-gray-100 p-3 px-4 text-2xl '>
+        <div className=' flex flex-col gap-3 rounded-md shadow-lg min-h-[200px] min-w-[300px] md:min-w-[400px] bg-gray-800 text-gray-100 p-3 px-4 text-2xl '>
             <span className=' text-center py-2 border-b uppercase'>{name}</span>
             <div className='flex justify-between p-2 bg-gray-500   rounded-md'>
                 <span>Player 1 : </span>
@@ -64,20 +80,17 @@ const Room = ({ name, playerCount, host, players, status, _id,user }) => {
             <div className={`flex justify-between p-2 ${bgColorClass} rounded-md`}>
                 <span>Status :</span>
                 <span>{status}..</span>
-
             </div>
-            {user.userId !== host && players.length<2
+            {user.userId !== host && players.length < 2
                 &&
-            <button onClick={RoomHandler} className='border bg-gray-900 rounded-lg hover:bg-gray-950'>Join</button>
+                <button onClick={joinRoomHandler} className='border bg-gray-900 rounded-lg hover:bg-gray-950'>Join</button>
             }
-
-            {user.userId === host &&players.length<2
+            {user.userId === host && players.length < 2
                 &&
                 <button className='border bg-gray-900 rounded-lg hover:bg-gray-950'>Wait for another Player</button>}
-            
-            {user.userId === host &&players.length===2
+            {user.userId === host && players.length === 2
                 &&
-            <button className='border bg-gray-900 rounded-lg hover:bg-gray-950'>Start Quizz</button>}
+                <button onClick={startQuizzHandler} className='border bg-gray-900 rounded-lg hover:bg-gray-950'>Start Quizz</button>}
         </div>
     )
 }

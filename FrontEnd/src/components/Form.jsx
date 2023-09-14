@@ -3,13 +3,11 @@ import axios from 'axios'
 import { AiOutlineClose } from 'react-icons/ai'
 import { GlobalContext } from '../containers/globalContext'
 import io from 'socket.io-client';
-const Form = ({ setShowForm }) => {
+const Form = ({ setShowForm,setShowButton }) => {
 
   const roomName = useRef(null);
   const { setRooms } = useContext(GlobalContext);
-
   const socket = io('http://localhost:3011');
-
   const formSubmitHandler = async (e) => {
     try {
       e.preventDefault();
@@ -19,21 +17,16 @@ const Form = ({ setShowForm }) => {
       const token = JSON.parse(localStorage.getItem('token'));
       const response = await axios.post('http://localhost:3011/room/create-room',roomObj,{headers:{"Authorization":token}})
       roomName.current.value = "";
-      setRooms(response.data.data);
-
+      setShowButton(false);
       socket.emit('createRoom', response.data.data);
-
     } catch (error) {
       console.log(error);
     }
-
     setShowForm((state) => !state);
-
   }
   
   useEffect(() => {
     return () => {
-      // Disconnect the socket when the component unmounts
       socket.disconnect();
     };
   }, []);
