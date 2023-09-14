@@ -1,7 +1,7 @@
-require("dotenv").config();
 
 const Express = require("express");
 const app = Express();
+require("dotenv").config();
 const http = require("http").Server(app);
 const io = require("socket.io")(http, {
 	cors: { origin: "*" },
