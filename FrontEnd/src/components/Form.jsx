@@ -1,4 +1,4 @@
-import React, { useRef,useContext,useEffect} from 'react'
+import React, { useRef, useContext, useEffect } from 'react'
 import axios from 'axios'
 import { AiOutlineClose } from 'react-icons/ai'
 import { GlobalContext } from '../containers/globalContext'
@@ -7,7 +7,7 @@ const Form = ({ setShowForm }) => {
 
   const roomName = useRef(null);
   const { setRooms } = useContext(GlobalContext);
-  const socket = io('http://localhost:3011');
+  const socket = io('https://brainstormebackend.onrender.com');
   const formSubmitHandler = async (e) => {
     try {
       e.preventDefault();
@@ -15,25 +15,25 @@ const Form = ({ setShowForm }) => {
         name: roomName.current.value,
       }
       const token = JSON.parse(localStorage.getItem('token'));
-      const response = await axios.post('http://localhost:3011/room/create-room',roomObj,{headers:{"Authorization":token}})
+      const response = await axios.post('https://brainstormebackend.onrender.com/room/create-room', roomObj, { headers: { "Authorization": token } })
       roomName.current.value = "";
-     
+
       socket.emit('createRoom', response.data.data);
     } catch (error) {
       console.log(error);
     }
     setShowForm((state) => !state);
   }
-  
+
   useEffect(() => {
     return () => {
       socket.disconnect();
     };
   }, []);
   return (
-    
+
     <div className=" relative w-11/12 p-12 bg-white sm:w-8/12 md:w-1/2 lg:w-5/12 rounded-md border-2  ">
-      <button className='absolute top-0 right-0 p-2' onClick={()=>{setShowForm((state)=>!state)}}><AiOutlineClose/></button>
+      <button className='absolute top-0 right-0 p-2' onClick={() => { setShowForm((state) => !state) }}><AiOutlineClose /></button>
       <h1 className="text-xl font-semibold text-gray-700">No Rooms Empty? <span className="font-normal text-gray-400 ">Dont worry, create your own room</span></h1>
       <form className="mt-6" onSubmit={formSubmitHandler}>
         <div className="flex justify-between gap-3">
@@ -47,7 +47,7 @@ const Form = ({ setShowForm }) => {
         </button>
       </form>
     </div>
-    
+
 
   )
 }

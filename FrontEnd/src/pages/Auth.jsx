@@ -1,10 +1,10 @@
 import React, { useRef, useState } from "react";
 import axios from "axios";
-import { NavLink,useNavigate } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 
 
 const Login = () => {
-    
+
     const [login, setLogin] = useState(false)
     const [sendingReq, setSendingReq] = useState(false);
     const navigate = useNavigate();
@@ -15,28 +15,28 @@ const Login = () => {
     const AuthHandler = async (obj) => {
         try {
             if (login) {
-               
+
                 setSendingReq(true);
-                const response = await axios.post(`http://localhost:3011/users/login`, obj);
+                const response = await axios.post(`https://brainstormebackend.onrender.com/users/login`, obj);
                 setSendingReq(false);
                 localStorage.setItem('token', JSON.stringify(response.data.token));
-                
+
                 navigate('/lobby');
             }
             else {
-              
+
                 setSendingReq(true);
-                const response = await axios.post(`http://localhost:3011/users/signup`, obj);
+                const response = await axios.post(`https://brainstormebackend.onrender.com/users/signup`, obj);
                 setSendingReq(false);
                 setLogin(true);
             }
         } catch (error) {
             console.log(error);
-           
+
             setSendingReq(false);
-           
+
         }
-       
+
     }
     const formSubmitHandler = async (e) => {
         e.preventDefault();
@@ -50,7 +50,7 @@ const Login = () => {
         if (login) LoginObj = {
             email: emailRef.current.value,
             password: passwordRef.current.value
-            
+
         }
         // passwordRef.current.value = emailRef.current.value = "";
         // if (!login) nameRef.current.value = "";
@@ -89,7 +89,7 @@ const Login = () => {
                             <p>Click Here</p></button>
                     </div>
                 </div>
-             
+
             </div>
         </div>
 

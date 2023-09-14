@@ -1,4 +1,4 @@
-import React, { useContext, useState,useEffect } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { GlobalContext } from '../containers/globalContext';
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
@@ -16,10 +16,10 @@ const QuizzDashboard = () => {
 
 
   const handleSave = async () => {
-   
+
     try {
       const token = JSON.parse(localStorage.getItem('token'));
-      let response = await axios.get(`http://localhost:3011/quizz/get-correct-answer/${currentQuestion._id}`, { headers: { "Authorization": token } });
+      let response = await axios.get(`https://brainstormebackend.onrender.com/quizz/get-correct-answer/${currentQuestion._id}`, { headers: { "Authorization": token } });
       const correct_answer = response.data.data;
 
       if (currentQuestionIndex < questions.length - 1) {
@@ -35,15 +35,15 @@ const QuizzDashboard = () => {
           setCurrenMarks((prev) => prev + 10);
         }
         const token = JSON.parse(localStorage.getItem('token'));
-        
+
         const roomId = localStorage.getItem('RoomId');
-      
+
         const finishObj = {
           marks: currentMarks,
-          RoomId:roomId
+          RoomId: roomId
         }
-      
-        const resi = await  axios.post('http://localhost:3011/quizz/finish', finishObj, { headers: { "Authorization": token } })
+
+        const resi = await axios.post('https://brainstormebackend.onrender.com/quizz/finish', finishObj, { headers: { "Authorization": token } })
         console.log(resi);
         navigate('/lobby');
       }

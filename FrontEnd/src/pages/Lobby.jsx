@@ -8,17 +8,17 @@ import { useNavigate } from 'react-router-dom'
 import LeaderBoard from '../components/LeaderBoard'
 const Lobby = () => {
   const user = parseJwt(localStorage.getItem('token'))
-  const socket = io('http://localhost:3011');
+  const socket = io('https://brainstormebackend.onrender.com');
   const [showForm, setShowForm] = useState(false);
 
-  const { rooms, setRooms,questions,setQuestions } = useContext(GlobalContext);
+  const { rooms, setRooms, questions, setQuestions } = useContext(GlobalContext);
   const navigate = useNavigate();
 
   useEffect(() => {
     const getRooms = async () => {
       try {
         const token = JSON.parse(localStorage.getItem('token'));
-        const response = await axios.get('http://localhost:3011/room/get-rooms', { headers: { "Authorization": token } })
+        const response = await axios.get('https://brainstormebackend.onrender.com/room/get-rooms', { headers: { "Authorization": token } })
         setRooms(response.data.data);
         console.log('get rooms being called');
       } catch (error) {
@@ -27,15 +27,15 @@ const Lobby = () => {
     }
     getRooms()
     socket.on('newRoomCreated', (newRoomData) => {
-      
+
       setRooms((prevRooms) => {
         return [...prevRooms, newRoomData];
       })
-     
+
 
     });
-    socket.on('quizStarted', ({roomId,player1,player2,questions}) => {
-      if (user.userId== player1 || user.userId== player2) {
+    socket.on('quizStarted', ({ roomId, player1, player2, questions }) => {
+      if (user.userId == player1 || user.userId == player2) {
         navigate('quizz-dashboard');
         localStorage.setItem('RoomId', roomId);
         setQuestions(questions);
@@ -58,7 +58,7 @@ const Lobby = () => {
           }
         });
       });
-      
+
     });
     return () => {
       socket.disconnect();
@@ -90,16 +90,16 @@ const Lobby = () => {
     <div className=''>
       <div className='flex justify-around p-4  '>
 
-        <LeaderBoard/>
-        {showForm && <Form setShowForm={setShowForm}  />}
-        {!showForm  && 
+        <LeaderBoard />
+        {showForm && <Form setShowForm={setShowForm} />}
+        {!showForm &&
           <button className='p-3 h-[50px] font-medium tracking-widest text-white uppercase bg-black shadow-lg focus:outline:none hover:bg-gray-900 hover:shadow:-none rounded-md  ' onClick={() => { setShowForm((state) => !state) }}>Create Room</button>
         }
       </div>
 
       <div className='flex justify-center gap-9 flex-wrap p-4'>
-        {rooms.length > 0 && rooms.map((room) => {
-          return <Room  key={room._id} name={room.name} playerCount={room.playerCount} host={room.host} players={room.players} status={room.status} _id={room._id} user={user} />
+        {rooms && rooms.length > 0 && rooms.map((room) => {
+          return <Room key={room._id} name={room.name} playerCount={room.playerCount} host={room.host} players={room.players} status={room.status} _id={room._id} user={user} />
         })}
       </div>
     </div>
