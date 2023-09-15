@@ -18,6 +18,11 @@ io.on("connection", (socket) => {
 		
 		io.emit("quizStarted", socketObj);
 	});
+	socket.on('updateResult', (newResult) => {
+		
+		io.emit("UpdateResult",newResult)
+	})
+
 });
 
 const UserRoute = require("./Routes/Users");

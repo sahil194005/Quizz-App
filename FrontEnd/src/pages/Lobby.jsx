@@ -10,7 +10,6 @@ const Lobby = () => {
   const user = parseJwt(localStorage.getItem('token'))
   const socket = io('https://brainstormebackend.onrender.com');
   const [showForm, setShowForm] = useState(false);
-
   const { rooms, setRooms, questions, setQuestions } = useContext(GlobalContext);
   const navigate = useNavigate();
 
@@ -20,6 +19,8 @@ const Lobby = () => {
         const token = JSON.parse(localStorage.getItem('token'));
         const response = await axios.get('https://brainstormebackend.onrender.com/room/get-rooms', { headers: { "Authorization": token } })
         setRooms(response.data.data);
+
+
         console.log('get rooms being called');
       } catch (error) {
         console.log(error);
@@ -28,6 +29,8 @@ const Lobby = () => {
     getRooms()
 
     socket.on('newRoomCreated', (newRoomData) => {
+
+
       setRooms((prevRooms) => {
         return [...prevRooms, newRoomData];
       })
@@ -40,6 +43,7 @@ const Lobby = () => {
         localStorage.setItem('RoomId', roomId);
         navigate('quizz-dashboard');
       }
+      console.log(roomId, "hiii");
       setRooms((prevRooms) => {
         return prevRooms.forEach((room) => {
           if (room._id === roomId) {
@@ -49,6 +53,9 @@ const Lobby = () => {
       })
     });
     socket.on('joinedRoom', (newRoomData) => {
+
+
+
       setRooms((prevRooms) => {
         return prevRooms.map((room) => {
           if (room._id === newRoomData._id) {

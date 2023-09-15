@@ -84,7 +84,6 @@ const joinRoom = async (req, res) => {
 };
 
 const showList = async (req, res) => {
-	
 	try {
 		const userId = req.User._id;
 		const rooms = await RoomSchema.find({
@@ -95,8 +94,8 @@ const showList = async (req, res) => {
 		});
 		const newRooms = rooms.filter((room) => {
 			if (
-				room.players[0]._id !== req.User._id &&
-				room.players[1]._id !== req.User._id
+				room.players[0]._id === req.User._id ||
+				room.players[1]._id === req.User._id
 			) {
 				return room;
 			}

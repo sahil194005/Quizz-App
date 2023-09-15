@@ -1,9 +1,11 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { GlobalContext } from '../containers/globalContext';
 import axios from 'axios';
+import io from 'socket.io-client';
 import { useNavigate } from "react-router-dom";
 const QuizzDashboard = () => {
   const navigate = useNavigate();
+  const socket = io('https://brainstormebackend.onrender.com');
   const { questions } = useContext(GlobalContext);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
@@ -16,7 +18,7 @@ const QuizzDashboard = () => {
 
 
   const handleSave = async () => {
-    console.log(currentQuestion);
+
     try {
       const token = JSON.parse(localStorage.getItem('token'));
       let response = await axios.get(`https://brainstormebackend.onrender.com/quizz/get-correct-answer/${currentQuestion._id}`, { headers: { "Authorization": token } });
@@ -35,24 +37,31 @@ const QuizzDashboard = () => {
           setCurrenMarks((prev) => prev + 10);
         }
         const token = JSON.parse(localStorage.getItem('token'));
-
         const roomId = localStorage.getItem('RoomId');
-
         const finishObj = {
           marks: currentMarks,
           RoomId: roomId
         }
 
         const resi = await axios.post('https://brainstormebackend.onrender.com/quizz/finish', finishObj, { headers: { "Authorization": token } })
-        console.log(resi);
-        navigate('/lobby');
+
+        socket.emit('updateResult', resi.data.data);
+        setTimeout(() => {
+
+          navigate('/lobby');
+        }, 2000)
       }
     } catch (error) {
       console.log(error);
     }
   };
 
+
+
   useEffect(() => {
+
+
+
     let intervalId;
     if (timer > 0) {
       intervalId = setInterval(() => {
@@ -64,7 +73,9 @@ const QuizzDashboard = () => {
     }
 
     return () => {
-      clearInterval(intervalId); // Clear the interval when the component unmounts or when the timer stops
+      clearInterval(intervalId);
+      socket.disconnect();
+      // Clear the interval when the component unmounts or when the timer stops
     };
   }, [timer]);
 

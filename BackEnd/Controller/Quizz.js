@@ -61,8 +61,8 @@ const finishQuizz = async (req, res) => {
 			await room.save();
 
 			res.status(200).json({
-				msg: "Quiz submitted successfully",
-			});
+				msg: "Quiz submitted successfully",data:room
+			}); 
 		} else {
 			res.status(404).json({
 				msg: "Player not found in the room",

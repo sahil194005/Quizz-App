@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
+import io from 'socket.io-client'
 const LeaderBoard = () => {
+    const socket = io('https://brainstormebackend.onrender.com');
     const [list, setList] = useState([]);
     useEffect(() => {
         const getList = async () => {
@@ -14,6 +16,12 @@ const LeaderBoard = () => {
             }
         }
         getList();
+
+
+        return () => {
+            socket.disconnect();
+        };
+
     }, [])
 
     return list.length > 0 ? (<div className=" rounded-md p-2  min-w-[300px] flex text-gray-200 flex-col items-center bg-gray-800 text-2xl">
