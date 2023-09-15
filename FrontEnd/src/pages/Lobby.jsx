@@ -36,9 +36,11 @@ const Lobby = () => {
     });
     socket.on('quizStarted', ({ roomId, player1, player2, questions }) => {
       if (user.userId == player1 || user.userId == player2) {
-        navigate('quizz-dashboard');
-        localStorage.setItem('RoomId', roomId);
         setQuestions(questions);
+
+
+        localStorage.setItem('RoomId', roomId);
+        navigate('quizz-dashboard');
       }
       setRooms((prevRooms) => {
         return prevRooms.forEach((room) => {

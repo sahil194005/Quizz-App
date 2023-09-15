@@ -48,6 +48,7 @@ const Room = ({ name, host, players, status, _id, user }) => {
                 const token = JSON.parse(localStorage.getItem('token'));
                 const response = await axios.post('https://brainstormebackend.onrender.com/quizz/start-quizz', { roomId: _id }, { headers: { "Authorization": token } });
                 const questions = response.data.data;
+
                 let socketObj = {
                     roomId: _id,
                     player1: players[0]._id,

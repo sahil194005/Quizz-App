@@ -16,7 +16,7 @@ const QuizzDashboard = () => {
 
 
   const handleSave = async () => {
-
+    console.log(currentQuestion);
     try {
       const token = JSON.parse(localStorage.getItem('token'));
       let response = await axios.get(`https://brainstormebackend.onrender.com/quizz/get-correct-answer/${currentQuestion._id}`, { headers: { "Authorization": token } });
