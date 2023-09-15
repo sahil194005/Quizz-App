@@ -26,18 +26,16 @@ const Lobby = () => {
       }
     }
     getRooms()
-    socket.on('newRoomCreated', (newRoomData) => {
 
+    socket.on('newRoomCreated', (newRoomData) => {
       setRooms((prevRooms) => {
         return [...prevRooms, newRoomData];
       })
-
-
     });
+
     socket.on('quizStarted', ({ roomId, player1, player2, questions }) => {
       if (user.userId == player1 || user.userId == player2) {
         setQuestions(questions);
-
 
         localStorage.setItem('RoomId', roomId);
         navigate('quizz-dashboard');

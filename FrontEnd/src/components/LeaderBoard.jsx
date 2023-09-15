@@ -34,7 +34,7 @@ const LeaderBoard = () => {
             })
         }
     </div>
-    ) : null
+    ) : <div></div>
 }
 
 export default LeaderBoard
