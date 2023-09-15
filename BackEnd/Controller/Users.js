@@ -12,8 +12,7 @@ const SignUp = async (req, res) => {
 	try {
 		const { email, password } = req.body;
 		
-		const { valid, reason, validators } = await isEmailValid(email);
-		if (valid) {
+		
 			let existingUser = await UserSchema.findOne({
 				email: email,
 			});
@@ -36,12 +35,7 @@ const SignUp = async (req, res) => {
 					success: true,
 				});
 			}
-		} else {
-			res.status(403).json({
-				msg: "Please provide valid email address",
-				success: false,
-			});
-		}
+		
 	} catch (error) {
 		console.log(error);
 		res.json({
